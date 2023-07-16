@@ -60,6 +60,9 @@ def stop_time_discretization(row):
 class PoliceDatasetEtl():
     def __init__(self, dataset: pd.DataFrame):
         self.dataset = dataset
+        self._all_search_types = None
+        self._clean_transformed_dataset = None
+        self._search_types_dataset = None
     
    
     @property 
@@ -80,14 +83,37 @@ class PoliceDatasetEtl():
             "driver_age_bins",
         ]
         
+    @property
+    def all_search_types(self) -> list[str]:
+        """
+        Returns all search types contained in the column search_type
+        """
+        #cache result
+        if self._all_search_types is not None:
+            return self._all_search_types
+        
+        all_search_types = (
+            self.clean_transform().search_type.dropna().apply(lambda x: x.split(",")).explode().unique().tolist()
+        )
+        all_search_types.remove("none")
+        self._all_search_types = all_search_types
+        return self._all_search_types.copy()
+    
+    @property
+    def all_search_types_columns(self) -> list[str]:
+        return [st.replace(" ", "_").lower() for st in self.all_search_types]
+        
     def clean_transform(self) -> pd.DataFrame:
         """
         Clean and transform the dataset - Clean nulls and create new features
         """
+        if self._clean_transformed_dataset is not None:
+            return self._clean_transformed_dataset
         cleaned_df = self.dataset.copy()
 
         cleaned_df["driver_age"] = cleaned_df.driver_age.fillna(0.0)
         cleaned_df["is_arrested"] = cleaned_df.is_arrested.fillna(False) 
+        cleaned_df["search_type"] = cleaned_df.search_type.fillna("none") 
         
         featured_df = cleaned_df.copy()
         featured_df["stop_outcome_level"] = featured_df.apply(
@@ -128,7 +154,23 @@ class PoliceDatasetEtl():
         counter - column to make counting operations easier
         """
         featured_df["counter"] = 1
+       
+        self._clean_transformed_dataset = featured_df 
+        return self._clean_transformed_dataset.copy()
+   
+    def get_search_type_df(self) -> pd.DataFrame:
+        """ 
+        Returns the columns of search_type in a one-hot-encoder style
+        """ 
+        if self._search_types_dataset is not None:
+            return self._search_types_dataset
         
-        return featured_df
-    
+        search_type_df = pd.DataFrame()
+        for s_type in self.all_search_types:
+            col_name = s_type.replace(" ", "_").lower()
+            search_type_df[col_name] = self.clean_transform().search_type.str.contains(s_type).astype(
+                int
+            )
+        self._search_types_dataset = search_type_df
+        return self._search_types_dataset.copy()
     
