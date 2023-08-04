@@ -88,7 +88,6 @@ class PoliceDatasetEtl():
         """
         Returns all search types contained in the column search_type
         """
-        #cache result
         if self._all_search_types is not None:
             return self._all_search_types
         

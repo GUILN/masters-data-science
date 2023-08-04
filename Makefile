@@ -1,4 +1,4 @@
 
 format:
-	black --ipynb  ./notebooks && black --pyi ./notebooks/etl
+	black --ipynb  ./notebooks && black ./notebooks/etl
 
