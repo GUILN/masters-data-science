@@ -1,6 +1,31 @@
 
 import pandas as pd
 
+
+def stop_time_discrete(row):
+    """
+    stop_time_discrete - quantifies hour
+    """
+    stop_time_discrete = 0.0
+    hour_min = row.stop_time.split(":")
+    stop_time_discrete = float(hour_min[0] + "." + hour_min[1])
+    return stop_time_discrete
+    
+def stop_duration_continuous(row):
+    """
+    stop_duration_continuous - quantifies the stop duration in minutes
+    it assumes middle value of the interval
+    """
+    stop_duration_continuous = 0
+    if row.stop_duration == "0-15 Min":
+        stop_duration_continuous = 7.5
+    elif row.stop_duration == "16-30 Min":
+        stop_duration_continuous = 23
+    elif row.stop_duration == "30+ Min":
+        stop_duration_continuous = 45
+
+    return stop_duration_continuous
+ 
 def stop_outcome_level(row):
     """
     stop_outcome_level - creates a feature that qantifies the gravity level of the
@@ -128,9 +153,19 @@ class PoliceDatasetEtl():
         featured_df["proportional_stop_outcome"] = (
             featured_df["stop_outcome_level"] / featured_df["violation_level"]
         )
+        
         featured_df["stop_time_discrete"] = featured_df.apply(
             stop_time_discretization, axis="columns"
         )
+        
+        featured_df["stop_duration_continuous"] = featured_df.apply(
+            stop_duration_continuous, axis="columns"
+        )
+        
+        featured_df["stop_time_discrete"] = featured_df.apply(
+            stop_time_discrete, axis="columns"
+        )
+        
         """
         is_black_or_hispanic - agrupamento de grupos que históricamente sofrem mais com abordagens policiais
         """
@@ -156,6 +191,7 @@ class PoliceDatasetEtl():
        
         self._clean_transformed_dataset = featured_df 
         return self._clean_transformed_dataset.copy()
+  
    
     def get_search_type_df(self) -> pd.DataFrame:
         """ 
