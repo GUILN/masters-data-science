@@ -160,4 +160,8 @@ cython_debug/
 #.idea/
 
 trabalho_conclusao/data/OTTO/**
+trabalho_conclusao/data/transformed/**
 
+# All .DS_store folders
+.DS_Store
+**/.DS_Store

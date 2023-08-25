@@ -1,4 +1,5 @@
 
 format:
-	black --ipynb  ./notebooks ./trabalho_conclusao && black ./notebooks/etl
+	black --ipynb --exclude='.py' ./notebooks/ ./trabalho_conclusao/  \
+	&& black --exclude='.ipynb' ./notebooks/etl ./trabalho_conclusao/etl
 
