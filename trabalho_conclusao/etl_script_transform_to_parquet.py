@@ -11,17 +11,16 @@ def etl_script():
     print("Loading data...")
     otto_train_df = pl.read_ndjson("./data/OTTO/otto-recsys-train.jsonl")
     folder = "./data/transformed"
-    
+
     print("Writing data...")
-    full_path = join(folder, "otto-transformed-train.parquet") 
+    full_path = join(folder, "otto-transformed-train.parquet")
     otto_train_df.write_parquet(
         full_path,
         use_pyarrow=True,
     )
-    
+
     print("Done!")
 
 
 if __name__ == "__main__":
     etl_script()
- 

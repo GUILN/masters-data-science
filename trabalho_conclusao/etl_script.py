@@ -1,5 +1,5 @@
 import pandas as pd
-from etl.otto_dataset_etl  import OttoDatasetEtl
+from etl.otto_dataset_etl import OttoDatasetEtl
 from os.path import join
 
 
@@ -18,4 +18,3 @@ def etl_script():
 
 if __name__ == "__main__":
     etl_script()
- 

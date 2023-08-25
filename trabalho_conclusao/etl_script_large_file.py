@@ -16,7 +16,7 @@ def etl_script(
     print(f"Reading file {from_file}...")
     original_df = pd.read_parquet(from_file)
     total_rows = original_df.shape[0]
-    
+
     for i in range(chunks):
         print(f"Processing chunk {i}...")
         start = i * (total_rows // chunks)
@@ -35,4 +35,3 @@ def etl_script(
 
 if __name__ == "__main__":
     etl_script()
- 
