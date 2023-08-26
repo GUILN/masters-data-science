@@ -1,5 +1,6 @@
 import os
 import polars as pl
+import tqdm
 
 
 def run_transform_sessions_with_more_than_three_clicks(
@@ -14,17 +15,20 @@ def run_transform_sessions_with_more_than_three_clicks(
 
     # read all parquet file names from folder
     parquet_files = []
-    for file in os.listdir(from_parquet_folder):
+    print("Getting parquet file names...")
+    for file in tqdm.tqdm(os.listdir(from_parquet_folder)):
         if file.endswith(".parquet"):
             parquet_files.append(file)
     # read all parquet files from folder
     transformed_df = pl.DataFrame()
-    for file in parquet_files:
-        print(f"Reading {file}...")
+    print("Reading parquet files...")
+    for file in tqdm.tqdm(parquet_files):
+        # print(f"Reading {file}...")
         transformed_df = transformed_df.vstack(
             pl.read_parquet(os.path.join(from_parquet_folder, file))
         )
 
+    print("Transforming...")
     # create new columns with count of items clicked, carted and ordered
     transformed_df = transformed_df.with_columns(
         items_clicked_count=transformed_df["items_clicked"].apply(lambda s: len(s)),
