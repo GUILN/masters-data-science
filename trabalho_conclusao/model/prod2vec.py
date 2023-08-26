@@ -19,5 +19,7 @@ class Prod2Vec(tf.keras.Model):
             input_length=1,
             name="prod2vec_embedding",
         )
-        
+
+        # self.context_embedding =
+
         self.dot = tf.keras.layers.Dot(axes=1)
